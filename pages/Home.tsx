@@ -26,29 +26,12 @@ export const Home: React.FC = () => {
 
   const validate = () => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
-    
-    // Validación DNI Estricta: 8 dígitos
-    if (form.documentType === 'DNI') {
-      if (form.documentNumber.length !== 8) {
-        newErrors.documentNumber = 'Debe tener 8 dígitos';
-      }
-    } else if (!form.documentNumber) {
-      newErrors.documentNumber = 'Requerido';
-    }
-
-    // Validación Celular: 9 dígitos
-    if (!form.phoneNumber || form.phoneNumber.length !== 9) {
-      newErrors.phoneNumber = 'Debe tener 9 dígitos';
-    }
-
+    if (form.documentType === 'DNI' && form.documentNumber.length !== 8) newErrors.documentNumber = 'DNI inválido';
+    if (!form.phoneNumber || form.phoneNumber.length !== 9) newErrors.phoneNumber = 'Celular inválido';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      newErrors.email = 'Email inválido';
-    }
-
+    if (!emailRegex.test(form.email)) newErrors.email = 'Email inválido';
     if (!form.birthDate) newErrors.birthDate = 'Requerido';
     if (!form.privacyAccepted) newErrors.privacyAccepted = 'Obligatorio';
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -63,104 +46,108 @@ export const Home: React.FC = () => {
 
   return (
     <Layout>
-      <div className="bg-white p-6 sm:p-8 rounded-[2rem] shadow-2xl flex flex-col gap-6 transform transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
+      <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.4)] flex flex-col gap-6 w-full max-w-[95vw] mx-auto overflow-hidden">
         <div className="text-center space-y-1">
-          <h1 className="text-2xl font-black text-[#0B1B3B] tracking-tight">REGISTRO</h1>
-          <p className="text-[#667085] text-[11px] font-medium">Ingresa tus datos para participar</p>
+          <h1 className="text-2xl font-black text-diners-navy tracking-tight uppercase">Registro</h1>
+          <p className="text-[#667085] text-[11px] font-medium tracking-wide">Ingresa tus datos para participar</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-2">
-             <Input 
-                label="Tipo" 
-                as="select" 
-                containerClassName="w-[35%]"
-                value={form.documentType}
-                onChange={e => setForm({...form, documentType: e.target.value as DocumentType})}
-              >
-                <option value="DNI">DNI</option>
-                <option value="CE">CE</option>
-                <option value="Pasaporte">PAS</option>
-              </Input>
-              <Input 
-                label="N° Documento" 
-                type="tel"
-                maxLength={form.documentType === 'DNI' ? 8 : 12}
-                containerClassName="w-[65%]"
-                placeholder="12345678"
-                value={form.documentNumber}
-                error={errors.documentNumber}
-                onChange={e => setForm({...form, documentNumber: e.target.value.replace(/\D/g, '')})}
-              />
+          {/* Fila 1: Tipo de Documento */}
+          <Input 
+            label="Tipo de Documento" 
+            as="select" 
+            value={form.documentType}
+            onChange={e => setForm({...form, documentType: e.target.value as DocumentType})}
+          >
+            <option value="DNI">DNI - Documento Nacional de Identidad</option>
+            <option value="CE">CE - Carné de Extranjería</option>
+            <option value="Pasaporte">Pasaporte</option>
+          </Input>
+
+          {/* Fila 2: N° Documento y Celular al mismo nivel */}
+          <div className="grid grid-cols-2 gap-3">
+            <Input 
+              label="N° Documento" 
+              type="tel"
+              maxLength={form.documentType === 'DNI' ? 8 : 12}
+              placeholder="12345678"
+              value={form.documentNumber}
+              error={errors.documentNumber}
+              onChange={e => setForm({...form, documentNumber: e.target.value.replace(/\D/g, '')})}
+            />
+            
+            <Input 
+              label="Celular" 
+              type="tel"
+              maxLength={9}
+              placeholder="999888777"
+              value={form.phoneNumber}
+              error={errors.phoneNumber}
+              onChange={e => setForm({...form, phoneNumber: e.target.value.replace(/\D/g, '')})}
+              prefix={
+                <select 
+                  className="bg-transparent text-diners-navy text-[10px] font-bold outline-none cursor-pointer pr-1"
+                  value={form.countryCode}
+                  onChange={e => setForm({...form, countryCode: e.target.value})}
+                >
+                  {COUNTRY_CODES.map(c => (
+                    <option key={c.code} value={c.code}>{c.label} {c.code}</option>
+                  ))}
+                </select>
+              }
+            />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-black text-[#667085] uppercase tracking-widest ml-1">Celular</label>
-            <div className="flex gap-2">
-              <select 
-                className="w-24 px-2 py-3 rounded-xl border-2 border-[#F3F6FB] bg-white text-[#0B1B3B] text-xs font-bold focus:border-[#1E88E5] outline-none"
-                value={form.countryCode}
-                onChange={e => setForm({...form, countryCode: e.target.value})}
-              >
-                {COUNTRY_CODES.map(c => (
-                  <option key={c.code} value={c.code}>{c.label} {c.code}</option>
-                ))}
-              </select>
+          {/* Fila 3: Fecha y Email */}
+          <div className="grid grid-cols-1 gap-4">
+            <Input 
+              label="Fecha de Nacimiento" 
+              type="date"
+              value={form.birthDate}
+              error={errors.birthDate}
+              onChange={e => setForm({...form, birthDate: e.target.value})}
+            />
+            <Input 
+              label="Email" 
+              type="email"
+              placeholder="correo@ejemplo.com"
+              value={form.email}
+              error={errors.email}
+              onChange={e => setForm({...form, email: e.target.value})}
+            />
+          </div>
+
+          {/* Checkboxes */}
+          <div className="space-y-3 pt-2">
+            <label className="flex items-start gap-3 group cursor-pointer">
               <input 
-                type="tel"
-                maxLength={9}
-                className={`flex-1 px-4 py-3 rounded-xl border-2 transition-all outline-none bg-white text-[#0B1B3B] text-sm placeholder:text-[#667085]/20
-                  ${errors.phoneNumber ? 'border-red-400' : 'border-[#F3F6FB] focus:border-[#1E88E5]'}`}
-                placeholder="999888777"
-                value={form.phoneNumber}
-                onChange={e => setForm({...form, phoneNumber: e.target.value.replace(/\D/g, '')})}
+                type="checkbox" 
+                className="w-4 h-4 mt-0.5 rounded border-[#D1D5DB] text-diners-royal focus:ring-0 cursor-pointer"
+                checked={form.privacyAccepted}
+                onChange={e => setForm({...form, privacyAccepted: e.target.checked})}
               />
-            </div>
-            {errors.phoneNumber && <span className="text-[10px] text-red-500 ml-1 font-bold">{errors.phoneNumber}</span>}
-          </div>
-
-          <Input 
-            label="Fecha de Nacimiento" 
-            type="date"
-            value={form.birthDate}
-            error={errors.birthDate}
-            onChange={e => setForm({...form, birthDate: e.target.value})}
-          />
-
-          <Input 
-            label="Email" 
-            type="email"
-            placeholder="correo@ejemplo.com"
-            value={form.email}
-            error={errors.email}
-            onChange={e => setForm({...form, email: e.target.value})}
-          />
-
-          <div className="space-y-3 pt-1">
-            {[
-              { id: 'privacy', label: 'Acepto la Política de Privacidad', checked: form.privacyAccepted, setter: (val: boolean) => setForm({...form, privacyAccepted: val}), required: true },
-              { id: 'marketing', label: 'Autorizo el tratamiento de datos comerciales', checked: form.marketingAccepted, setter: (val: boolean) => setForm({...form, marketingAccepted: val}), required: false }
-            ].map((opt) => (
-              <label key={opt.id} className="flex items-start gap-2.5 p-0.5 group cursor-pointer">
-                <div className="relative flex items-center h-4 mt-0.5">
-                  <input 
-                    type="checkbox" 
-                    className="w-3.5 h-3.5 rounded border border-[#D1D5DB] text-[#1E88E5] focus:ring-0 focus:ring-offset-0 cursor-pointer transition-all"
-                    checked={opt.checked}
-                    onChange={e => opt.setter(e.target.checked)}
-                  />
-                </div>
-                <span className="text-[10.5px] text-[#667085] leading-snug select-none font-medium">
-                  {opt.label} {opt.required && <Link to="/privacidad" className="text-[#1E88E5] font-black hover:underline">(Obligatorio)</Link>}
-                </span>
-              </label>
-            ))}
+              <span className="text-[11px] text-[#667085] leading-tight font-medium">
+                Acepto la <Link to="/privacidad" className="text-diners-royal font-bold hover:underline">Política de Privacidad</Link> (Obligatorio)
+              </span>
+            </label>
+            <label className="flex items-start gap-3 group cursor-pointer">
+              <input 
+                type="checkbox" 
+                className="w-4 h-4 mt-0.5 rounded border-[#D1D5DB] text-diners-royal focus:ring-0 cursor-pointer"
+                checked={form.marketingAccepted}
+                onChange={e => setForm({...form, marketingAccepted: e.target.checked})}
+              />
+              <span className="text-[11px] text-[#667085] leading-tight font-medium">
+                Autorizo el tratamiento de datos comerciales
+              </span>
+            </label>
           </div>
 
           <Button 
             fullWidth 
             type="submit" 
-            className="mt-3 uppercase tracking-widest py-3.5 text-[11px] font-black shadow-xl"
+            className="mt-2 uppercase tracking-[0.2em] py-4 text-xs font-black shadow-xl"
             disabled={!form.privacyAccepted}
           >
             Siguiente
