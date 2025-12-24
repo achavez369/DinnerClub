@@ -31,11 +31,14 @@
     <style type="text/tailwindcss">
         @layer base {
             body {
-                @apply bg-[#0B1B3B] text-white antialiased overflow-x-hidden;
+                @apply bg-[#0B1B3B] text-white antialiased overflow-x-hidden min-h-screen;
                 background: radial-gradient(circle at top right, #0E2553 0%, #0B1B3B 100%);
             }
         }
         @layer utilities {
+            .bg-navy-gradient {
+                background: radial-gradient(circle at top right, #0E2553 0%, #0B1B3B 100%);
+            }
             .custom-scrollbar::-webkit-scrollbar {
                 width: 4px;
             }
