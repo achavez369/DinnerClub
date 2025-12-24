@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Layout } from '../components/Layout';
@@ -53,18 +52,19 @@ export const Home: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input 
-            label="Tipo de Documento" 
-            as="select" 
-            value={form.documentType}
-            onChange={e => setForm({...form, documentType: e.target.value as DocumentType})}
-          >
-            <option value="DNI">DNI - Identidad</option>
-            <option value="CE">CE - Extranjería</option>
-            <option value="Pasaporte">Pasaporte</option>
-          </Input>
-
+          {/* Fila 1: Tipo y Número de Documento */}
           <div className="grid grid-cols-2 gap-3">
+            <Input 
+              label="Tipo Documento" 
+              as="select" 
+              value={form.documentType}
+              onChange={e => setForm({...form, documentType: e.target.value as DocumentType})}
+            >
+              <option value="DNI">DNI</option>
+              <option value="CE">CE</option>
+              <option value="Pasaporte">PAS</option>
+            </Input>
+
             <Input 
               label="N° Documento" 
               type="tel"
@@ -74,29 +74,31 @@ export const Home: React.FC = () => {
               error={errors.documentNumber}
               onChange={e => setForm({...form, documentNumber: e.target.value.replace(/\D/g, '')})}
             />
-            
-            <Input 
-              label="Celular" 
-              type="tel"
-              maxLength={9}
-              placeholder="999888777"
-              value={form.phoneNumber}
-              error={errors.phoneNumber}
-              onChange={e => setForm({...form, phoneNumber: e.target.value.replace(/\D/g, '')})}
-              prefix={
-                <select 
-                  className="bg-transparent text-diners-navy text-[10px] font-black outline-none cursor-pointer pr-1"
-                  value={form.countryCode}
-                  onChange={e => setForm({...form, countryCode: e.target.value})}
-                >
-                  {COUNTRY_CODES.map(c => (
-                    <option key={c.code} value={c.code}>{c.label}</option>
-                  ))}
-                </select>
-              }
-            />
           </div>
 
+          {/* Fila 2: Celular (Ancho completo) */}
+          <Input 
+            label="Número de Celular" 
+            type="tel"
+            maxLength={9}
+            placeholder="999888777"
+            value={form.phoneNumber}
+            error={errors.phoneNumber}
+            onChange={e => setForm({...form, phoneNumber: e.target.value.replace(/\D/g, '')})}
+            prefix={
+              <select 
+                className="bg-transparent text-diners-navy text-[10px] font-black outline-none cursor-pointer pr-1"
+                value={form.countryCode}
+                onChange={e => setForm({...form, countryCode: e.target.value})}
+              >
+                {COUNTRY_CODES.map(c => (
+                  <option key={c.code} value={c.code}>{c.label}</option>
+                ))}
+              </select>
+            }
+          />
+
+          {/* Fila 3: Fecha de Nacimiento */}
           <Input 
             label="Fecha de Nacimiento" 
             type="date"
@@ -105,8 +107,9 @@ export const Home: React.FC = () => {
             onChange={e => setForm({...form, birthDate: e.target.value})}
           />
 
+          {/* Fila 4: Email */}
           <Input 
-            label="Email" 
+            label="Correo Electrónico" 
             type="email"
             placeholder="correo@ejemplo.com"
             value={form.email}
