@@ -1,12 +1,11 @@
-
 import React from 'react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement>, 'prefix'> {
   label: string;
   error?: string;
   as?: 'input' | 'select';
   containerClassName?: string;
-  prefix?: React.ReactNode;
+  startAdornment?: React.ReactNode;
 }
 
 export const Input: React.FC<InputProps> = ({ 
@@ -15,7 +14,7 @@ export const Input: React.FC<InputProps> = ({
   as = 'input', 
   children, 
   containerClassName = '', 
-  prefix,
+  startAdornment,
   ...props 
 }) => {
   const Component = as as any;
@@ -25,9 +24,9 @@ export const Input: React.FC<InputProps> = ({
       <div className={`flex items-center rounded-xl border-2 transition-all bg-[#F9FBFF] overflow-hidden min-h-[50px]
         ${error ? 'border-red-400 focus-within:border-red-500' : 'border-[#F0F4F8] focus-within:border-diners-royal focus-within:bg-white'}`}>
         
-        {prefix && (
+        {startAdornment && (
           <div className="h-full border-r border-[#F0F4F8] bg-white/50 px-2 flex items-center justify-center">
-            {prefix}
+            {startAdornment}
           </div>
         )}
 

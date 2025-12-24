@@ -85,7 +85,7 @@ export const Home: React.FC = () => {
             value={form.phoneNumber}
             error={errors.phoneNumber}
             onChange={e => setForm({...form, phoneNumber: e.target.value.replace(/\D/g, '')})}
-            prefix={
+            startAdornment={
               <select 
                 className="bg-transparent text-diners-navy text-[10px] font-black outline-none cursor-pointer pr-1"
                 value={form.countryCode}
