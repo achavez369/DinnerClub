@@ -6,21 +6,39 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLSe
   error?: string;
   as?: 'input' | 'select';
   containerClassName?: string;
+  prefix?: React.ReactNode;
 }
 
-export const Input: React.FC<InputProps> = ({ label, error, as = 'input', children, containerClassName = '', ...props }) => {
+export const Input: React.FC<InputProps> = ({ 
+  label, 
+  error, 
+  as = 'input', 
+  children, 
+  containerClassName = '', 
+  prefix,
+  ...props 
+}) => {
   const Component = as as any;
   return (
-    <div className={`flex flex-col gap-1.5 w-full ${containerClassName}`}>
-      <label className="text-[11px] font-bold text-[#667085] uppercase tracking-wider ml-1">{label}</label>
-      <Component
-        className={`px-4 py-3.5 rounded-xl border-2 transition-all outline-none bg-white text-[#0B1B3B] text-sm placeholder:text-[#667085]/40
-          ${error ? 'border-red-400 focus:border-red-500' : 'border-[#F3F6FB] focus:border-[#1E88E5]'}`}
-        {...props}
-      >
-        {children}
-      </Component>
-      {error && <span className="text-[10px] text-red-500 ml-1 font-medium">{error}</span>}
+    <div className={`flex flex-col gap-1 w-full ${containerClassName}`}>
+      <label className="text-[10px] font-extrabold text-[#667085] uppercase tracking-widest ml-1">{label}</label>
+      <div className={`flex items-center rounded-xl border-2 transition-all bg-[#F9FBFF] overflow-hidden min-h-[50px]
+        ${error ? 'border-red-400 focus-within:border-red-500' : 'border-[#F0F4F8] focus-within:border-diners-royal focus-within:bg-white'}`}>
+        
+        {prefix && (
+          <div className="h-full border-r border-[#F0F4F8] bg-white/50 px-2 flex items-center justify-center">
+            {prefix}
+          </div>
+        )}
+
+        <Component
+          className="w-full px-4 py-3 bg-transparent text-[#0B1B3B] text-sm font-semibold outline-none placeholder:text-gray-300"
+          {...props}
+        >
+          {children}
+        </Component>
+      </div>
+      {error && <span className="text-[10px] text-red-500 ml-1 font-bold">{error}</span>}
     </div>
   );
 };
